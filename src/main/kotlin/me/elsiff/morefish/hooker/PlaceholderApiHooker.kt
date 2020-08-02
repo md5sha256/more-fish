@@ -1,11 +1,11 @@
 package me.elsiff.morefish.hooker
 
 import me.clip.placeholderapi.PlaceholderAPI
-import me.clip.placeholderapi.external.EZPlaceholderHook
+import me.clip.placeholderapi.expansion.PlaceholderExpansion
 import me.elsiff.morefish.MoreFish
 import me.elsiff.morefish.configuration.format.Format
 import me.elsiff.morefish.fishing.competition.FishingCompetition
-import org.bukkit.entity.Player
+import org.bukkit.OfflinePlayer
 
 /**
  * Created by elsiff on 2019-01-24.
@@ -15,21 +15,32 @@ class PlaceholderApiHooker : PluginHooker {
     override var hasHooked = false
 
     override fun hook(plugin: MoreFish) {
-        MoreFishPlaceholder(plugin).hook()
         Format.init(this)
         hasHooked = true
     }
 
-    fun tryReplacing(string: String, player: Player? = null): String {
+    fun tryReplacing(string: String, player: OfflinePlayer? = null): String {
         return PlaceholderAPI.setPlaceholders(player, string)
     }
 
     class MoreFishPlaceholder(
-        moreFish: MoreFish
-    ) : EZPlaceholderHook(moreFish, "morefish") {
+            moreFish: MoreFish
+    ) : PlaceholderExpansion() {
         private val competition: FishingCompetition = moreFish.competition
 
-        override fun onPlaceholderRequest(player: Player?, identifier: String): String? {
+        override fun getVersion(): String {
+            return MoreFish.instance.description.version
+        }
+
+        override fun getAuthor(): String {
+            return "elsiff"
+        }
+
+        override fun getIdentifier(): String {
+            return "morefish"
+        }
+
+        override fun onRequest(player: OfflinePlayer?, identifier: String): String? {
             return when {
                 identifier.startsWith("top_player_") -> {
                     val number = identifier.replace("top_player_", "").toInt()
