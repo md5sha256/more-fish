@@ -87,6 +87,7 @@ configurations {
 
 shadowJar {
     relocate 'co.aikar.commands', "${mainPackage}.acf"
+    minimize()
 }
 build { dependsOn shadowJar }
 
